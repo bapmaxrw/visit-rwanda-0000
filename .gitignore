@@ -1,0 +1,12 @@
+node_modules
+.next
+.env
+.env.local
+.DS_Store
+*.log
+.pglite
+tsconfig.tsbuildinfo
+next-env.d.ts
+/freebuff-sites-build/
+/.open-next/
+/.wrangler/

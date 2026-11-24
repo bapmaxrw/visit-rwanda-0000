@@ -1,0 +1,27 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1794994202545,
+      "tag": "0000_amusing_lizard",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1794999838434,
+      "tag": "0001_enquiries",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1795002289972,
+      "tag": "0002_video_assets",
+      "breakpoints": true
+    }
+  ]
+}

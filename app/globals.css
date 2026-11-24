@@ -1,0 +1,370 @@
+@import "tailwindcss";
+
+@theme {
+  --color-forest: #06231c;
+  --color-pine: #0b3d2e;
+  --color-emerald: #12775a;
+  --color-moss: #2f8f6b;
+  --color-gold: #c9a44c;
+  --color-gold-light: #f0d79a;
+  --color-cream: #f8f5ed;
+  --color-sand: #efe9da;
+  --color-ink: #12211c;
+  --font-display: var(--font-playfair), Georgia, serif;
+  --font-sans: var(--font-inter), system-ui, sans-serif;
+}
+
+/* Neutral ramp for the active palette. Body text, labels and the card fill are
+   mixed from the palette's own ink, cream and sand, so the greys keep the
+   theme's temperature (cool on Lake Kivu, violet on Amahoro) instead of staying
+   warm green. Utilities: text-body, text-body-soft, text-muted, text-label,
+   text-faint, text-faintest, text-gold-ink, bg-surface, bg-surface-muted. */
+@theme inline {
+  --color-surface: color-mix(in srgb, var(--color-cream) 40%, #ffffff);
+  --color-surface-muted: color-mix(in srgb, var(--color-cream) 55%, var(--color-sand));
+  --color-body: color-mix(in srgb, var(--color-ink) 77%, var(--color-cream));
+  --color-body-soft: color-mix(in srgb, var(--color-ink) 70%, var(--color-cream));
+  --color-muted: color-mix(in srgb, var(--color-ink) 58%, var(--color-cream));
+  --color-label: color-mix(in srgb, var(--color-ink) 51%, var(--color-cream));
+  --color-faint: color-mix(in srgb, var(--color-ink) 44%, var(--color-cream));
+  --color-faintest: color-mix(in srgb, var(--color-ink) 34%, var(--color-cream));
+  --color-gold-ink: color-mix(in srgb, var(--color-gold) 48%, var(--color-ink));
+}
+
+:root {
+  color-scheme: light;
+  --shadow-soft: 0 24px 60px -30px color-mix(in srgb, var(--color-forest) 38%, transparent);
+}
+
+/* ---------------------------------------------------------------------------
+   Colour themes
+   Five palettes, selected in the header. Each one overrides the same nine
+   colours that Tailwind's generated utilities reference, so every component
+   (navigation, footer, cards, buttons, forms, cinematic overlays) follows the
+   chosen theme. The default palette is also the one declared in `@theme`.
+   --------------------------------------------------------------------------- */
+html[data-theme="emerald"] {
+  --color-forest: #06231c;
+  --color-pine: #0b3d2e;
+  --color-emerald: #12775a;
+  --color-moss: #2f8f6b;
+  --color-gold: #c9a44c;
+  --color-gold-light: #f0d79a;
+  --color-cream: #f8f5ed;
+  --color-sand: #efe9da;
+  --color-ink: #12211c;
+}
+
+html[data-theme="volcano"] {
+  --color-forest: #1f1410;
+  --color-pine: #45241a;
+  --color-emerald: #96401f;
+  --color-moss: #c06a3c;
+  --color-gold: #d9a13f;
+  --color-gold-light: #f4d9a6;
+  --color-cream: #faf3e8;
+  --color-sand: #f1e3d2;
+  --color-ink: #22160f;
+}
+
+html[data-theme="kivu"] {
+  --color-forest: #071e2a;
+  --color-pine: #0b3a4c;
+  --color-emerald: #0f6478;
+  --color-moss: #3d8fa3;
+  --color-gold: #d3b26a;
+  --color-gold-light: #eeddb2;
+  --color-cream: #f4f8fa;
+  --color-sand: #e3eef3;
+  --color-ink: #0e1e26;
+}
+
+html[data-theme="savanna"] {
+  --color-forest: #241a10;
+  --color-pine: #3f3213;
+  --color-emerald: #7a5a12;
+  --color-moss: #a98a3c;
+  --color-gold: #c98f2c;
+  --color-gold-light: #f0dcaa;
+  --color-cream: #fbf6e9;
+  --color-sand: #f0e6cf;
+  --color-ink: #211a0e;
+}
+
+html[data-theme="amahoro"] {
+  --color-forest: #1a1030;
+  --color-pine: #33205a;
+  --color-emerald: #5c3b91;
+  --color-moss: #8f6cc0;
+  --color-gold: #d4a94c;
+  --color-gold-light: #efdcae;
+  --color-cream: #f7f3f9;
+  --color-sand: #ece5f0;
+  --color-ink: #1c1426;
+}
+
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--color-cream);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+::selection {
+  background: var(--color-gold);
+  color: var(--color-forest);
+}
+
+h1, h2, h3, .font-display {
+  font-family: var(--font-display);
+  letter-spacing: -0.015em;
+}
+
+.container-x {
+  width: 100%;
+  max-width: 1280px;
+  margin-inline: auto;
+  padding-inline: 1.25rem;
+}
+
+@media (min-width: 1024px) {
+  .container-x { padding-inline: 2rem; }
+}
+
+.eyebrow {
+  font-size: 0.7rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--color-emerald);
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 9999px;
+  font-size: 0.86rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  padding: 0.85rem 1.6rem;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease, color 0.25s ease;
+  will-change: transform;
+}
+.btn:hover { transform: translateY(-2px); }
+.btn:active { transform: translateY(0); }
+.btn:disabled { opacity: 0.55; pointer-events: none; }
+
+.btn-gold {
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--color-gold) 82%, #ffffff),
+    var(--color-gold)
+  );
+  color: var(--color-forest);
+  box-shadow: 0 14px 30px -18px color-mix(in srgb, var(--color-gold) 90%, transparent);
+}
+.btn-gold:hover { box-shadow: 0 18px 36px -16px color-mix(in srgb, var(--color-gold) 95%, transparent); }
+
+.btn-forest {
+  background: var(--color-pine);
+  color: var(--color-cream);
+}
+.btn-forest:hover { background: var(--color-emerald); }
+
+.btn-outline {
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  color: #fff;
+  backdrop-filter: blur(8px);
+}
+.btn-outline:hover { background: rgba(255, 255, 255, 0.14); }
+
+.btn-ghost {
+  border: 1px solid color-mix(in srgb, var(--color-pine) 22%, transparent);
+  color: var(--color-pine);
+}
+.btn-ghost:hover { background: color-mix(in srgb, var(--color-pine) 6%, transparent); }
+
+.glass {
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(18px) saturate(140%);
+  border: 1px solid rgba(255, 255, 255, 0.55);
+}
+
+.glass-dark {
+  background: color-mix(in srgb, var(--color-forest) 60%, transparent);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(240, 215, 154, 0.18);
+}
+
+.card {
+  background: var(--color-surface);
+  border: 1px solid color-mix(in srgb, var(--color-pine) 12%, transparent);
+  border-radius: 1.5rem;
+  box-shadow: var(--shadow-soft);
+}
+
+.field-label {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--color-body-soft);
+  margin-bottom: 0.4rem;
+}
+
+.input {
+  width: 100%;
+  border-radius: 0.9rem;
+  border: 1px solid color-mix(in srgb, var(--color-pine) 16%, transparent);
+  background: #fff;
+  padding: 0.72rem 0.95rem;
+  font-size: 0.9rem;
+  color: var(--color-ink);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.input:focus {
+  outline: none;
+  border-color: var(--color-emerald);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-emerald) 18%, transparent);
+}
+.input::placeholder { color: var(--color-faint); }
+
+select.input {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23808080' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.9rem center;
+  padding-right: 2.2rem;
+}
+
+.hairline { border-top: 1px solid color-mix(in srgb, var(--color-pine) 12%, transparent); }
+
+.reveal {
+  opacity: 0;
+  transform: translateY(26px);
+  transition: opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1), transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.reveal.is-visible { opacity: 1; transform: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .reveal { opacity: 1; transform: none; transition: none; }
+  .btn:hover { transform: none; }
+}
+
+/* ---------- custom cursor ---------- */
+.cursor-dot,
+.cursor-ring {
+  position: fixed;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 9999;
+  will-change: transform;
+  transform: translate3d(-50%, -50%, 0);
+}
+.cursor-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 9999px;
+  background: var(--color-gold);
+  box-shadow: 0 0 14px rgba(201, 164, 76, 0.8);
+}
+.cursor-ring {
+  width: 38px;
+  height: 38px;
+  border-radius: 9999px;
+  border: 1px solid rgba(201, 164, 76, 0.75);
+  transition: width 0.22s ease, height 0.22s ease, background 0.22s ease, border-color 0.22s ease;
+}
+.cursor-ring::after {
+  content: "";
+  position: absolute;
+  inset: 11px;
+  border-radius: 9999px;
+  border: 1px solid rgba(18, 119, 90, 0.45);
+}
+.cursor-ring.is-hover {
+  width: 62px;
+  height: 62px;
+  background: rgba(201, 164, 76, 0.12);
+  border-color: rgba(201, 164, 76, 0.95);
+}
+.cursor-ring.is-hover::after { border-color: rgba(240, 215, 154, 0.6); }
+.cursor-enabled,
+.cursor-enabled a,
+.cursor-enabled button,
+.cursor-enabled [role="button"],
+.cursor-enabled label {
+  cursor: none;
+}
+.cursor-enabled input,
+.cursor-enabled textarea,
+.cursor-enabled select {
+  cursor: auto;
+}
+@media (pointer: coarse) {
+  .cursor-dot, .cursor-ring { display: none; }
+}
+
+/* ---------- motion ---------- */
+@keyframes float-slow {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-14px); }
+}
+@keyframes ken-burns {
+  0% { transform: scale(1.02); }
+  100% { transform: scale(1.12); }
+}
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+@keyframes spin-slow { to { transform: rotate(360deg); } }
+@keyframes pulse-soft {
+  0%, 100% { opacity: 0.85; transform: scale(0.98); }
+  50% { opacity: 1; transform: scale(1.02); }
+}
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: none; }
+}
+.animate-fade-up { animation: fade-up 0.7s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--color-pine) 7%, transparent) 25%,
+    color-mix(in srgb, var(--color-pine) 13%, transparent) 37%,
+    color-mix(in srgb, var(--color-pine) 7%, transparent) 63%
+  );
+  background-size: 400% 100%;
+  animation: shimmer 1.4s ease infinite;
+}
+
+.grain::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: 0.035;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+.prose-rwanda p { margin-bottom: 1.15rem; line-height: 1.85; color: var(--color-body); }
+.prose-rwanda h2 { font-size: 1.5rem; margin: 2rem 0 0.85rem; color: var(--color-pine); }
