@@ -16,18 +16,26 @@ for (const file of [".env.local", ".env"]) {
 }
 
 async function main() {
-  const url = process.env.DATABASE_URL;
+  // Prefer a separately managed migration credential. The normal DATABASE_URL
+  // remains a fallback for local development and simple single-role setups.
+  const url = process.env.MIGRATION_DATABASE_URL?.trim() || process.env.DATABASE_URL?.trim();
   if (!url) {
-    console.log("DATABASE_URL is not set: local PGlite applies migrations automatically on first request.");
-    return;
+    throw new Error(
+      "Set MIGRATION_DATABASE_URL (recommended) or DATABASE_URL before applying PostgreSQL migrations."
+    );
   }
-  const pool = new Pool({ connectionString: url });
-  await migrate(drizzle(pool), { migrationsFolder: path.join(process.cwd(), "drizzle") });
-  await pool.end();
-  console.log("Migrations applied to the configured PostgreSQL database.");
+
+  const pool = new Pool({ connectionString: url, max: 1, connectionTimeoutMillis: 10_000 });
+  try {
+    await migrate(drizzle(pool), { migrationsFolder: path.join(process.cwd(), "drizzle") });
+    console.log("Migrations applied to the configured PostgreSQL database.");
+  } finally {
+    await pool.end();
+  }
 }
 
 main().catch((error) => {
-  console.error(error);
-  process.exit(1);
+  // Do not print connection configuration or credentials.
+  console.error("Database migration failed:", error instanceof Error ? error.message : "Unknown error");
+  process.exitCode = 1;
 });

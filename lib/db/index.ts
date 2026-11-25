@@ -1,8 +1,6 @@
 import path from "node:path";
 import { drizzle as drizzleNode, type NodePgDatabase } from "drizzle-orm/node-postgres";
 import { drizzle as drizzlePglite } from "drizzle-orm/pglite";
-import { migrate as migrateNode } from "drizzle-orm/node-postgres/migrator";
-import { migrate as migratePglite } from "drizzle-orm/pglite/migrator";
 import { Pool } from "pg";
 import { PGlite } from "@electric-sql/pglite";
 import * as schema from "./schema";
@@ -16,7 +14,6 @@ type Globals = typeof globalThis & {
 };
 
 const g = globalThis as Globals;
-const migrationsFolder = path.join(process.cwd(), "drizzle");
 
 async function connect(): Promise<Database> {
   const connectionString = process.env.DATABASE_URL?.trim();
@@ -24,35 +21,37 @@ async function connect(): Promise<Database> {
   if (connectionString) {
     const pool = new Pool({
       connectionString,
-      max: 5,
+      // Keep each serverless instance's connection footprint small. The global
+      // singleton below lets warm instances reuse this pool between requests.
+      max: 1,
+      idleTimeoutMillis: 10_000,
+      connectionTimeoutMillis: 10_000,
       ssl: connectionString.includes("localhost") || connectionString.includes("127.0.0.1")
         ? undefined
         : { rejectUnauthorized: false },
     });
-    const db = drizzleNode(pool, { schema });
     g.__vrPool = pool;
-    await migrateNode(db, { migrationsFolder });
-    return db;
+    return drizzleNode(pool, { schema });
   }
 
-  // Local development: embedded PostgreSQL (real Postgres engine via WASM).
-  // Production must provide DATABASE_URL.
+  if (process.env.NODE_ENV === "production") {
+    throw new Error(
+      "DATABASE_URL is required in production. Configure a hosted PostgreSQL connection in the deployment environment."
+    );
+  }
+
+  // Local development only. Persistent production data must use hosted PostgreSQL.
   const client = new PGlite(path.join(process.cwd(), ".pglite"));
-  const db = drizzlePglite(client, { schema });
   g.__vrPglite = client;
-  await migratePglite(db, { migrationsFolder });
-  return db as unknown as Database;
+  return drizzlePglite(client, { schema }) as unknown as Database;
 }
 
-/** Returns the singleton database, applying migrations once per process. */
+/** Returns the process-level database connection. Schema changes are never run
+ * on a page/API request: use the explicit `npm run db:migrate` deployment step.
+ */
 export function getDb(): Promise<Database> {
   if (!g.__vrDb) {
-    g.__vrDb = (async () => {
-      const db = await connect();
-      const { ensureSeeded } = await import("./seed");
-      await ensureSeeded(db);
-      return db;
-    })().catch((error) => {
+    g.__vrDb = connect().catch((error) => {
       g.__vrDb = undefined;
       throw error;
     });
